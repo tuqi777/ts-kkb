@@ -1,44 +1,80 @@
 <template>
   <div class="hello">
-    <h1>{{ msg }}</h1>
     <p>
-      For a guide and recipes on how to configure / customize this project,<br>
-      check out the
-      <a href="https://cli.vuejs.org" target="_blank" rel="noopener">vue-cli documentation</a>.
+      <input type="text" @keydown.enter="addListNode">
     </p>
-    <h3>Installed CLI Plugins</h3>
+    <tsxComp :title="loveStory"/>
     <ul>
-      <li><a href="https://github.com/vuejs/vue-cli/tree/dev/packages/%40vue/cli-plugin-babel" target="_blank" rel="noopener">babel</a></li>
-      <li><a href="https://github.com/vuejs/vue-cli/tree/dev/packages/%40vue/cli-plugin-typescript" target="_blank" rel="noopener">typescript</a></li>
-      <li><a href="https://github.com/vuejs/vue-cli/tree/dev/packages/%40vue/cli-plugin-router" target="_blank" rel="noopener">router</a></li>
-      <li><a href="https://github.com/vuejs/vue-cli/tree/dev/packages/%40vue/cli-plugin-vuex" target="_blank" rel="noopener">vuex</a></li>
-      <li><a href="https://github.com/vuejs/vue-cli/tree/dev/packages/%40vue/cli-plugin-eslint" target="_blank" rel="noopener">eslint</a></li>
+      <!-- eslint-disable -->
+      <li 
+          v-for="(v, index) in vList" 
+          :key="index" 
+          @click="selectLi(index)"
+          :class="{ selectedLi: v.selected }">{{v.name}}</li>
+      <!-- eslint-enable -->
     </ul>
-    <h3>Essential Links</h3>
-    <ul>
-      <li><a href="https://vuejs.org" target="_blank" rel="noopener">Core Docs</a></li>
-      <li><a href="https://forum.vuejs.org" target="_blank" rel="noopener">Forum</a></li>
-      <li><a href="https://chat.vuejs.org" target="_blank" rel="noopener">Community Chat</a></li>
-      <li><a href="https://twitter.com/vuejs" target="_blank" rel="noopener">Twitter</a></li>
-      <li><a href="https://news.vuejs.org" target="_blank" rel="noopener">News</a></li>
-    </ul>
-    <h3>Ecosystem</h3>
-    <ul>
-      <li><a href="https://router.vuejs.org" target="_blank" rel="noopener">vue-router</a></li>
-      <li><a href="https://vuex.vuejs.org" target="_blank" rel="noopener">vuex</a></li>
-      <li><a href="https://github.com/vuejs/vue-devtools#vue-devtools" target="_blank" rel="noopener">vue-devtools</a></li>
-      <li><a href="https://vue-loader.vuejs.org" target="_blank" rel="noopener">vue-loader</a></li>
-      <li><a href="https://github.com/vuejs/awesome-vue" target="_blank" rel="noopener">awesome-vue</a></li>
-    </ul>
+    <h2>特性总数：{{listLength}}</h2>
   </div>
 </template>
 
 <script lang="ts">
 import { Component, Prop, Vue } from 'vue-property-decorator'
-
-@Component
+import tsxComp from '@/components/add'
+type selectedType = {
+  selected: boolean;
+}
+interface ListType {
+  name: string;
+  age: number;
+}
+type combin = selectedType & ListType
+@Component({
+  components: {
+    tsxComp: tsxComp
+  }
+})
 export default class HelloWorld extends Vue {
   @Prop() private msg!: string;
+  loveStory ='taleSWfit'
+  private vList: combin[] = [{
+    name: 'lp',
+    age: 26,
+    selected: false
+  }, {
+    name: 'cjy',
+    age: 36,
+    selected: true
+  }]
+
+  created () {
+    console.log(this, 'Vue')
+  }
+
+  get listLength () {
+    return this.vList.length
+  }
+
+  selectLi (i: number, v?: object) {
+    this.vList[i].selected = true
+    this.vList = this.vList.map((item, index) => {
+      if (i !== index) item.selected = false
+      return item
+    })
+  }
+
+  addListNode (e: KeyboardEvent) {
+    // 获取input的value
+    // 如果用户特别确定类型，可以用一下方式做类型断言
+    const inp = e.target as HTMLInputElement
+    const val = inp.value
+    const addObj = {
+      name: val,
+      age: Math.random() * 10,
+      selected: false
+    }
+    this.vList.push(addObj)
+    inp.value = ''
+  }
 }
 </script>
 
@@ -51,11 +87,7 @@ ul {
   list-style-type: none;
   padding: 0;
 }
-li {
-  display: inline-block;
-  margin: 0 10px;
-}
-a {
-  color: #42b983;
+.selectedLi{
+  background: #42b983;
 }
 </style>

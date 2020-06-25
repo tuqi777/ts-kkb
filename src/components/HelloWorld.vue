@@ -73,6 +73,7 @@ export default class HelloWorld extends Vue {
       selected: false
     }
     this.vList.push(addObj)
+    this.selectLi(this.vList.length - 1)
     inp.value = ''
   }
 }
